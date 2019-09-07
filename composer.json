@@ -1,0 +1,16 @@
+{
+    "name": "textme/sms",
+    "description": "Class for sending sms by textme servies",
+    "authors": [
+        {
+            "name": "Pol Bogopolsky",
+            "email": "pol292@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Textme\\SMS\\": "src/"
+        }
+    }
+}
