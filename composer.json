@@ -8,6 +8,7 @@
         }
     ],
     "require": {},
+    "require-dev": {},
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
