@@ -129,7 +129,7 @@ class SMS
      * Add a singel template of massage and send to one or more phones
      * @param string|array $numbers The number or numbers of phones
      * @param string|array $message The message to send if its be array its mast contain a template key and by {{key}} can contain vars in template.
-     * @param bool $source The Sender name or number for this message.
+     * @param string $source The Sender name or number for this message (optional).
      * @return SMS The instance of class.
      */
     public static function addMessage($numbers, $message, $source = false)
