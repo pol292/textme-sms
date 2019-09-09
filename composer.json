@@ -2,6 +2,7 @@
     "name": "textme/sms",
     "version": "1.0.0-stable",
     "description": "Class for sending sms by textme servies",
+    "license": "MIT",
     "authors": [
         {
             "name": "Pol Bogopolsky",

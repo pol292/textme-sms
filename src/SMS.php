@@ -12,11 +12,13 @@ class SMS
     private static $_messages;
     private static $_source = '';
     private static $_response;
+    private static $_request;
 
 
     private static function _execute(&$dataXML)
     {
         $xml = $dataXML->asXML();
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://my.textme.co.il/api",
@@ -34,12 +36,12 @@ class SMS
 
         curl_close($curl);
 
-        self::$_response = ['send' => $xml];
+        self::$_request = $dataXML;
 
         if ($err) {
-            self::$_response['error'] = $err;
+            self::$_response = $err;
         } else {
-            self::$_response['response'] = $response;
+            self::$_response = new \SimpleXMLElement($response);
         }
     }
 
@@ -91,6 +93,23 @@ class SMS
         self::$_source = $source;
     }
 
+    private static function _getDataFromDateAndType($type, &$from, &$to)
+    {
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><' . $type . '/>');
+        self::_addUserToXML($xml);
+        if (empty($from)) {
+            $from = date('d/m/y') . ' 00:00';
+        }
+        if (empty($to)) {
+            $to = date('d/m/y H:i');
+        }
+        $xml->addChild('from', $from);
+        $xml->addChild('to', $to);
+
+        self::_execute($xml);
+        return self::getResponse();
+    }
+
     /**
      * Init this system and create a instance of class
      * @param string $username The username of textme system.
@@ -107,7 +126,7 @@ class SMS
      * Init this system and create a instance of class
      * @param string $username The username of textme system.
      * @param string $password The password of textme system.
-     * @param string $source The Sender name or number.
+     * @param string $source The Sender name or number or false (false for getting data methods).
      * @return SMS The instance of class.
      */
     public function __construct($username, $password, $source = '')
@@ -119,7 +138,9 @@ class SMS
                 'password' => $password,
 
             ];
-            self::_makeMassageToSend($source);
+            if ($source != false) {
+                self::_makeMassageToSend($source);
+            }
 
         }
         return self::$_instance;
@@ -211,12 +232,43 @@ class SMS
     }
 
     /**
-     * Get the last response
+     * Get the incaming sms
+     * @param string $from The min time and date to check (format: d/m/y).
+     * @param string $to The max time and date to check (format: d/m/y).
      * @return array The array with success (simpleXML) or error and send xml
+     */
+    public static function getIncoming($from = '', $to = '')
+    {
+        return self::_getDataFromDateAndType('incoming', $from, $to);
+    }
+
+    /**
+     * Get the Black List sms
+     * @param string $from The min time and date to check (format: d/m/y).
+     * @param string $to The max time and date to check (format: d/m/y).
+     * @return array The array with success (simpleXML) or error and send xml
+     */
+    public static function getBlacklist($from = '', $to = '')
+    {
+        return self::_getDataFromDateAndType('blacklist', $from, $to);
+    }
+
+    /**
+     * Get the last response
+     * @return array The array with success (simpleXML) or error
      */
     public static function getResponse()
     {
         return self::$_response;
+    }
+
+    /**
+     * Get the last sending request
+     * @return array The array with success (simpleXML) or error
+     */
+    public static function getRequest()
+    {
+        return self::$_request;
     }
 
 }
