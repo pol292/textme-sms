@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Textme\SMS;
+namespace Textme;
 
 
 class SMS
