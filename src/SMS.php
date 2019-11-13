@@ -10,7 +10,7 @@ class SMS
     private static $_sendSMSMessage;
     private static $_user;
     private static $_messages;
-    private static $_source = '';
+    private static $_source = '000';
     private static $_response;
     private static $_request;
 
@@ -129,7 +129,7 @@ class SMS
      * @param string $source The Sender name or number or false (false for getting data methods).
      * @return SMS The instance of class.
      */
-    public function __construct($username, $password, $source = '')
+    public function __construct($username, $password, $source = '000')
     {
         if (empty(self::$_sendSMSMessage)) {
             self::$_instance = $this;
@@ -138,10 +138,10 @@ class SMS
                 'password' => $password,
 
             ];
-            if ($source != false) {
-                self::_makeMassageToSend($source);
+            if (empty($source)) {
+                $source = '000';
             }
-
+            self::_makeMassageToSend($source);
         }
         return self::$_instance;
     }
@@ -155,30 +155,32 @@ class SMS
      */
     public static function addMessage($numbers, $message, $source = false)
     {
-        $sms = self::$_messages->addChild('sms');
-        if (!empty($source)) {
-            $sms->addChild('source', $source);
-        } else if (!empty(self::$_source)) {
-            $sms->addChild('source', self::$_source);
-        }
+        if (get_class(self::$_messages) == 'SimpleXMLElement') {
+            $sms = self::$_messages->addChild('sms');
+            if (!empty($source)) {
+                $sms->addChild('source', $source);
+            } else if (!empty(self::$_source)) {
+                $sms->addChild('source', self::$_source);
+            }
 
-        $phones = $sms->addChild('destinations');
-        if (is_array($numbers)) {
-            if (empty($number['phone']) && empty($number['id'])) {
-                foreach ($numbers as $number) {
-                    self::_setPhoneNumber($number, $phones);
+            $phones = $sms->addChild('destinations');
+            if (is_array($numbers)) {
+                if (empty($number['phone']) && empty($number['id'])) {
+                    foreach ($numbers as $number) {
+                        self::_setPhoneNumber($number, $phones);
+                    }
+                } else {
+                    self::_setPhoneNumber($numbers, $phones);
                 }
             } else {
                 self::_setPhoneNumber($numbers, $phones);
             }
-        } else {
-            self::_setPhoneNumber($numbers, $phones);
-        }
 
-        if (is_array($message) && !empty($message['template'])) {
-            self::_createTemplate($message, $sms);
-        } else {
-            $sms->addChild('message', $message);
+            if (is_array($message) && !empty($message['template'])) {
+                self::_createTemplate($message, $sms);
+            } else {
+                $sms->addChild('message', $message);
+            }
         }
         return self::$_instance;
     }
