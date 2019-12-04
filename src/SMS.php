@@ -36,7 +36,7 @@ class SMS
 
         curl_close($curl);
 
-        self::$_request = $dataXML;
+        self::$_request = clone $dataXML;
 
         if ($err) {
             self::$_response = $err;
