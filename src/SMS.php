@@ -184,9 +184,14 @@ class SMS
             }
             if (!empty($settings) && is_array($settings)) {
                 foreach ($settings as $setting => $value) {
-                    $sms->addChild($setting, $value);
+                    if (empty(self::$_sendSMSMessage->$setting)) {
+                        self::$_sendSMSMessage->addChild($setting, $value);
+                    } else {
+                        self::$_sendSMSMessage->children($setting, $value);
+                    }
                 }
             }
+            dd(self::$_sendSMSMessage);
         }
         return self::$_instance;
     }
