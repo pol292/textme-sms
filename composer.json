@@ -1,6 +1,6 @@
 {
     "name": "textme/sms",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Class for sending sms by textme servies",
     "license": "MIT",
     "authors": [
