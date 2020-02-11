@@ -71,10 +71,10 @@ class SMS
     private static function _addSingelMessage(&$sms)
     {
         extract($sms);
-        if (empty($source)) {
+        if (empty($settings)) {
             self::addMessage($numbers, $message);
         } else {
-            self::addMessage($numbers, $message, $source);
+            self::addMessage($numbers, $message, $settings);
         }
     }
 
@@ -150,15 +150,16 @@ class SMS
      * Add a singel template of massage and send to one or more phones
      * @param string|array $numbers The number or numbers of phones
      * @param string|array $message The message to send if its be array its mast contain a template key and by {{key}} can contain vars in template.
-     * @param string $source The Sender name or number for this message (optional).
+     * @param array $settings (optional) can contain settings like source name,timing,response,add_unsubscribe.
      * @return SMS The instance of class.
      */
-    public static function addMessage($numbers, $message, $source = false)
+    public static function addMessage($numbers, $message, $settings = false)
     {
         if (get_class(self::$_messages) == 'SimpleXMLElement') {
             $sms = self::$_messages->addChild('sms');
-            if (!empty($source)) {
-                $sms->addChild('source', $source);
+            if (!empty($settings['source'])) {
+                $sms->addChild('source', $settings['source']);
+                unset($settings['source']);
             } else if (!empty(self::$_source)) {
                 $sms->addChild('source', self::$_source);
             }
@@ -180,6 +181,9 @@ class SMS
                 self::_createTemplate($message, $sms);
             } else {
                 $sms->addChild('message', $message);
+            }
+            foreach ($settings as $setting => $value) {
+                $sms->addChild($setting, $value);
             }
         }
         return self::$_instance;
