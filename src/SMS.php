@@ -182,8 +182,10 @@ class SMS
             } else {
                 $sms->addChild('message', $message);
             }
-            foreach ($settings as $setting => $value) {
-                $sms->addChild($setting, $value);
+            if (!empty($settings) && is_array($settings)) {
+                foreach ($settings as $setting => $value) {
+                    $sms->addChild($setting, $value);
+                }
             }
         }
         return self::$_instance;
