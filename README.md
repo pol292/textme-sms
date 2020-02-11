@@ -82,7 +82,7 @@ Textme\SMS::getResponse();
 
 You can create object of this class and use its all like object
 ```php
-$sms = new Textme\SMS($username, $password, $source = '(optinal)');
+$sms = new Textme\SMS($username, $password, $settings = ['(optinal)']);
 ```
 
 ## License
